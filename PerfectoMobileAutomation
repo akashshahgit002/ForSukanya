@@ -1,0 +1,117 @@
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.MobileElement;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.net.URL;
+
+public class PerfectoMobileAutomation {
+
+    private AndroidDriver<MobileElement> androidDriver;
+    private IOSDriver<MobileElement> iosDriver;
+
+    // Perfecto credentials and cloud URL
+    private final String PERFECTO_URL = "https://<your-cloud>.perfecto.io/nexperience/perfectomobile/wd/hub";
+    private final String SECURITY_TOKEN = "<your-security-token>"; // Replace with your security token
+
+    public static void main(String[] args) {
+        PerfectoMobileAutomation automation = new PerfectoMobileAutomation();
+
+        try {
+            System.out.println("=== Starting Automation ===");
+
+            // Step 1: Connect and perform actions on Android
+            System.out.println("\nConnecting to Android device...");
+            automation.connectToAndroid("YOUR_ANDROID_DEVICE_NAME"); // Replace with your Android device name
+            automation.performActionOnAndroid();
+            automation.closeAndroid();
+
+            // Step 2: Connect and perform actions on iOS
+            System.out.println("\nConnecting to iOS device...");
+            automation.connectToIOS("YOUR_IOS_DEVICE_NAME"); // Replace with your iOS device name
+            automation.performActionOnIOS();
+            automation.closeIOS();
+
+            System.out.println("=== Automation Completed ===");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Connect to Perfecto Android Device
+    public void connectToAndroid(String deviceName) throws Exception {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("platformName", "Android");
+        capabilities.setCapability("deviceName", deviceName);
+        capabilities.setCapability("automationName", "UiAutomator2");
+        capabilities.setCapability("perfecto:securityToken", SECURITY_TOKEN);
+        capabilities.setCapability("appPackage", "com.android.settings"); // Example inbuilt app
+        capabilities.setCapability("appActivity", "com.android.settings.Settings");
+
+        androidDriver = new AndroidDriver<>(new URL(PERFECTO_URL), capabilities);
+        System.out.println("Connected to Android device: " + deviceName);
+    }
+
+    // Perform actions on Android
+    public void performActionOnAndroid() {
+        if (androidDriver != null) {
+            try {
+                // Example action: Click on "Network & internet"
+                MobileElement element = androidDriver.findElement(AppiumBy.accessibilityId("Network & internet"));
+                element.click();
+                System.out.println("Clicked on 'Network & internet' on Android.");
+            } catch (Exception e) {
+                System.out.println("Error performing action on Android: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Android Driver is not initialized.");
+        }
+    }
+
+    // Close Android driver
+    public void closeAndroid() {
+        if (androidDriver != null) {
+            androidDriver.quit();
+            System.out.println("Android driver closed.");
+        }
+    }
+
+    // Connect to Perfecto iOS Device
+    public void connectToIOS(String deviceName) throws Exception {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("platformName", "iOS");
+        capabilities.setCapability("deviceName", deviceName);
+        capabilities.setCapability("automationName", "XCUITest");
+        capabilities.setCapability("perfecto:securityToken", SECURITY_TOKEN);
+        capabilities.setCapability("bundleId", "com.apple.Preferences"); // Example inbuilt app (Settings)
+
+        iosDriver = new IOSDriver<>(new URL(PERFECTO_URL), capabilities);
+        System.out.println("Connected to iOS device: " + deviceName);
+    }
+
+    // Perform actions on iOS
+    public void performActionOnIOS() {
+        if (iosDriver != null) {
+            try {
+                // Example action: Click on "Wi-Fi"
+                MobileElement element = iosDriver.findElement(AppiumBy.accessibilityId("Wi-Fi"));
+                element.click();
+                System.out.println("Clicked on 'Wi-Fi' on iOS.");
+            } catch (Exception e) {
+                System.out.println("Error performing action on iOS: " + e.getMessage());
+            }
+        } else {
+            System.out.println("iOS Driver is not initialized.");
+        }
+    }
+
+    // Close iOS driver
+    public void closeIOS() {
+        if (iosDriver != null) {
+            iosDriver.quit();
+            System.out.println("iOS driver closed.");
+        }
+    }
+}
